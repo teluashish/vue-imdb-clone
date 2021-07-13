@@ -1,6 +1,6 @@
 <template>
     <div id="formModal">
-        <Button type="primary" ghost @click="personModal = true">+ Add {{isActor ? 'Actor' : 'Producer'}}</Button>
+        <Button type="primary" ghost @click="personModal = true">{{title}}</Button>
         <Modal v-model="personModal" width="600">
             <p slot="header" style="text-align:center">
                 <span>Fill Details</span>
@@ -93,9 +93,14 @@ export default {
                 }
             }
         },
+        computed:{
+            title(){
+                return this.isActor ? '+Add Actor' : '+Add Producer'
+            }
+        },
 
         methods: {
-            ...mapActions(['postActorAsync','postProducerAsync','getActorsAsync','getProducersAsync']),
+            ...mapActions(['postActor','postProducer','getActors','getProducers']),
             submit () {
                 this.personModal = false
                 this.add()
@@ -107,12 +112,12 @@ export default {
 
            async add(){
                 if (this.isActor){
-                    await this.postActorAsync(this.formItem)
-                    await this.getActorsAsync()
+                    await this.postActor(this.formItem)
+                    await this.getActors()
                 }
                 else { 
-                    await this.postProducerAsync(this.formItem)
-                    await this.getProducersAsync()
+                    await this.postProducer(this.formItem)
+                    await this.getProducers()
                 }
                 this.makeEmpty()
             },

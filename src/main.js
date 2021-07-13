@@ -13,7 +13,6 @@ Vue.use(ViewUI);
 
 axios.defaults.baseURL = "https://localhost:64536/";
 Vue.config.productionTip = false
-export const eventBus = new Vue();
 
 new Vue({
   router,

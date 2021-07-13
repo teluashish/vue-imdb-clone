@@ -3,7 +3,7 @@
                 <Card :bordered="false">
                     <p slot="title"> {{person.name}} </p>
                     <div align="left">
-                    <p><b>Date of Birth: </b> {{new Date(person.dob).toLocaleDateString()}}</p>
+                    <p><b>Date of Birth: </b> {{formattedDOB}}</p>
                     <p><b>Gender:</b> {{person.gender}}</p>
                     <br>
                     <DetailsModal :entity="person" :isMovieDetail="false"> </DetailsModal>
@@ -19,16 +19,21 @@ import DetailsModal from '../components/DetailsModal.vue'
 export default {
     props:['person','isActor'],
     components:{ DetailsModal },
+    computed:{
+        formattedDOB(){
+            return new Date(this.person.dob).toLocaleDateString()
+        }
+    },
     methods:{
-        ...mapActions(['deleteActorAsync','deleteProducerAsync','getActorsAsync','getProducersAsync']),
+        ...mapActions(['deleteActor','deleteProducer','getActors','getProducers']),
         async deletePerson(id){
             if (this.isActor){
-                await this.deleteActorAsync(id)
-                await this.getActorsAsync()
+                await this.deleteActor(id)
+                await this.getActors()
             }
             else {
-                await this.deleteProducerAsync(id)
-                await this.getProducersAsync()
+                await this.deleteProducer(id)
+                await this.getProducers()
             }
 
         }

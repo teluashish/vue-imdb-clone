@@ -2,37 +2,38 @@
 <template>
 <div>
     <br>
-    <FormModal :isEdit="false" ></FormModal>
+    <MovieFormModal :isEdit="false" ></MovieFormModal>
     <br><br>
     <br>
     <div align="center">
     <Row :gutter="20" :type="'flex'">
-        <CardComponent v-for="(movie,idx) in getMovies" :key="idx" :movie="movie" :isMovieCard="true"></CardComponent>
+        <Card v-for="(movie,index) in getAllMovies" :key="index" :movie="movie" :isMovieCard="true"></Card>
     </Row>
     </div>
  </div>
 </template>
 
 <script>
-    import CardComponent from '../components/CardComponent.vue';
-    import FormModal from '../components/FormModal.vue';
+    import Card from '../components/Card.vue';
+    import MovieFormModal from '../components/MovieFormModal.vue';
     import {mapGetters, mapActions} from 'vuex'
     
     
     export default {
 
         computed:{
-                ...mapGetters(['getMovies']),
+                ...mapGetters(['getAllMovies']),
         },
         methods:{
-                ...mapActions(['getMoviesAsync'])
+                ...mapActions(['getMovies'])
         },
         components:{
-            CardComponent,FormModal
+            Card,
+            MovieFormModal
         },
 
         created(){
-            this.getMoviesAsync()
+            this.getMovies()
         }
     }
 </script>

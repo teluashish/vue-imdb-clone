@@ -4,7 +4,7 @@
     <br><br>
     <div align="center" id="card-body">
     <Row :gutter="20" :type="'flex'">
-        <CardComponent v-for="(actor,idx) in getActors" :key="idx" :actor="actor" :isMovieCard="false" :isActor="true"></CardComponent>
+        <Card v-for="(actor,index) in getAllActors" :key="index" :actor="actor" :isMovieCard="false" :isActor="true"></Card>
     </Row> 
     </div>
  </div>
@@ -12,23 +12,23 @@
 
 <script>
     import { mapActions, mapGetters } from 'vuex';
-    import CardComponent from '../components/CardComponent.vue';
+    import Card from '../components/Card.vue';
     import PersonFormModal from '../components/PersonFormModal.vue';
 
     
     export default {
         computed:{
-            ...mapGetters(['getActors']),
+            ...mapGetters(['getAllActors']),
         },
         components:{
-            CardComponent,
+            Card,
             PersonFormModal
         },
         methods:{
-            ...mapActions(['getActorsAsync'])
+            ...mapActions(['getActors'])
         },
         created(){
-            this.getActorsAsync()
+            this.getActors()
         }
     }
 </script>

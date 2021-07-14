@@ -15,51 +15,10 @@ export const store = new Vuex.Store({
     },
 
     getters: {
-        getMovies: state => state.movies ,
-        getActors: state => state.actors,
-        getProducers: state => state.producers,
-        getGenres: state => state.genres,
-        getPersonValidationDescriptor: getAgeFunc => {
-            
-            const descriptor = {
-            name: {
-              type: 'string',
-              required: true,
-              trigger: 'blur',
-              validator: (rule, value) => /^[a-z0-9]+$/.test(value),
-            },
-
-            dob: {
-              type: 'date',
-              required: true,
-              trigger: 'change',
-              asyncValidator: (rule, value) => {
-                var age = getAgeFunc(value)
-                return new Promise((resolve, reject) => {
-                  if (age < 18) {
-                    reject('too young');  
-                  } else {
-                    resolve();
-                  }
-                });
-              },
-            },
-            
-            bio: {
-                type: 'string',
-                trigger: 'blur',
-                message: 'Please enter introduction',
-                required: true, 
-            },
-
-            gender: {
-                required: true,
-                trigger: 'change',
-                message: 'please select gender'
-            }
-          };
-        return descriptor;
-        }
+        getAllMovies: state => state.movies ,
+        getAllActors: state => state.actors,
+        getAllProducers: state => state.producers,
+        getAllGenres: state => state.genres,
     },
 
     mutations: {
@@ -80,83 +39,83 @@ export const store = new Vuex.Store({
     },
 
     actions: {
-        async getMoviesAsync(context){
+        async getMovies(context){
             await axios.get('/movies').then( movies =>
                 context.commit('assignMovies',movies['data'])).catch( error =>
                     window.alert('movies fetch: '+error)
                 )
         },
 
-        async postMovieAsync(context, movie){
-            await axios.post('/movies/upload',movie.coverImage).then( response =>{
-                movie.coverImage = response.data
-                console.log(movie)
+        async postMovie(context, movie){
+            if(movie.coverImage!=''){
+                await axios.post('/movies/upload',movie.coverImage).then( response =>{
+                    movie.coverImage = response.data
+                }).catch(error => window.alert(error))
             }
-                ).catch(error => window.alert(error))
             await axios.post('/movies/',movie).then(movieId => 
                     console.log('added movie id: '+movieId)).catch(error => 
                         window.alert('add movie: '+error))
         },
 
 
-        async putMovieAsync(context, {movie,movieId}){
-            movie, movieId
-            console.log("putMovieAsync",movieId)
-            await axios.post('/movies/upload',movie.coverImage).then( response =>
-                movie.coverImage = response.data
-            ).catch(error => window.alert(error))
+        async putMovie(context, {movie,movieId}){
+            if(movie.coverImage!=''){
+                await axios.post('/movies/upload',movie.coverImage).then( response =>
+                    movie.coverImage = response.data
+                ).catch(error => window.alert(error))
+            }
             await axios.put('/movies/'+movieId, movie).then(movieId => 
                 console.log('updated movie id: '+movieId)).catch(error => 
                     window.alert('movie uodate '+error))
         },
-        async deleteMovieAsync(context, movieId){
+        async deleteMovie(context, movieId){
             await axios.delete('/movies/'+movieId).then(movieId => 
                 console.log('deleted '+movieId)).catch(error => 
                     window.alert('movie deletion '+movieId+' '+error))
         },
 
         //Actors
-        async getActorsAsync(context){
+        async getActors(context){
             await axios.get('/actors').then( actors => 
                 context.commit('assignActors',actors['data'])).catch( error =>
                     window.alert('actors fetch: '+error)
                 )
             
         },
-       async postActorAsync(context, actor){
+       async postActor(context, actor){
             await axios.post('/actors/',actor).then(actorId => 
                 console.log('added actor id: '+actorId)).catch(error => 
                     window.alert('add actor: '+error));
         },
-        async putActorAsync(context, actor, actorId){
+        async putActor(context, actor, actorId){
             await axios.put('/actors/'+actorId, actor).then(actorId => 
                 console.log('updated actor id: '+actorId)).catch(error => 
                     window.alert('actor update '+error));
         },
-        async deleteActorAsync(context, actorId){
+        async deleteActor(context, actorId){
             await axios.delete('/actors/'+actorId).then(actorId => 
                 console.log(actorId)).catch(error => 
                     window.alert('actor deletion '+actorId+' '+error))
         },
 
         //Producers
-        async getProducersAsync(context){
+        async getProducers(context){
             await axios.get('/producers').then( producers => 
                 context.commit('assignProducers',producers['data'])).catch( error =>
                     window.alert('producers fetch: '+error)
                 )
         },
-        async postProducerAsync(context, producer){
+        async postProducer(context, producer){
             await axios.post('/producers/',producer).then(producerId => 
                 console.log('added producer id: '+producerId)).catch(error => 
                     window.alert('add producer: '+error));
         },
-        async putProducerAsync(context, producer, producerId){
+        async putProducer(context, producer, producerId){
             await axios.put('/producers/'+producerId, producer).then(producerId => 
                 console.log('updated producer id: '+producerId)).catch(error => 
                     window.alert('producer update '+error));
         },
-        async deleteProducerAsync(context, producerId){
+        async deleteProducer(context, producerId){
             await axios.delete('/producers/'+producerId).then(producerId => 
                 console.log('deleted '+producerId)).catch(error => 
                     window.alert('producer deletion '+producerId+' '+error))
@@ -164,20 +123,20 @@ export const store = new Vuex.Store({
 
 
         //Genres
-        async getGenresAsync(context){
+        async getGenres(context){
             await axios.get('/genres').then( genres => 
                 context.commit('assignGenres',genres['data'])).catch( error =>
                     window.alert('genres fetch: '+error)
                 )
         },
         
-        async postGenreAsync(context, genre){
+        async postGenre(context, genre){
             await axios.post('/genres/',genre).then(genreId => 
                 console.log('added genre id: '+genreId)).catch(error => 
                     window.alert('add genre: '+error));
         },
 
-        async deleteGenreAsync(context, genreId){
+        async deleteGenre(context, genreId){
             await axios.delete('/genres/'+genreId).then(genreId => 
                 console.log('deleted '+genreId)).catch(error => 
                     window.alert('genre deletion '+genreId+' '+error))

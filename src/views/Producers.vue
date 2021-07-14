@@ -3,28 +3,28 @@
     <PersonFormModal :isActor="false"> </PersonFormModal> 
     <br><br>
     <Row :gutter="20" :type="'flex'">
-        <CardComponent v-for="(producer,idx) in getProducers" :key="idx" :producer="producer" :isMovieCard="false" :isActor="false"></CardComponent>
+        <Card v-for="(producer,index) in getAllProducers" :key="index" :producer="producer" :isMovieCard="false" :isActor="false"></Card>
     </Row>
  </div>
 </template>
 
 <script>
-    import CardComponent from '../components/CardComponent.vue';
+    import Card from '../components/Card.vue';
     import PersonFormModal from '../components/PersonFormModal.vue';
     import {mapGetters, mapActions} from 'vuex'
 
     export default {
         computed:{
-                ...mapGetters(['getProducers']),
+                ...mapGetters(['getAllProducers']),
         },
         components:{
-            CardComponent,PersonFormModal
+            Card,PersonFormModal
         },
         methods:{
-            ...mapActions(['getProducersAsync'])
+            ...mapActions(['getProducers'])
         },
         created(){
-            this.getProducersAsync()
+            this.getProducers()
         }
     }
 </script>

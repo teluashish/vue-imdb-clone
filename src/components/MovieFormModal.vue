@@ -1,6 +1,6 @@
 <template>
     <span id="formModal">
-        <Button type="primary" ghost @click="movieModal = true">{{ isEdit ? 'Edit Movie' : '+ Add Movie'}}</Button>
+        <Button type="primary" ghost @click="movieModal = true">{{ title }}</Button>
         <Modal v-model="movieModal" width="600">
             <p slot="header" style="text-align:center">
                 <span>Fill Movie Details</span>
@@ -18,19 +18,19 @@
                     <FormItem label="Select Actors" prop="actorIds">
 
                            <Select v-model="formItemToCopy.actorIds" multiple  placeholder="Select Actors ">
-                                <Option v-for="actor in getActors" :value="actor.id" :key="actor.id">{{ actor.name }}</Option>
+                                <Option v-for="(actor,index) in getAllActors" :value="actor.id" :key="index">{{ actor.name }}</Option>
                             </Select>
                     </FormItem>
 
                     <FormItem label="Select Genres" prop="genreIds">
                            <Select v-model="formItemToCopy.genreIds" multiple  placeholder="Select Genres ">
-                                <Option v-for="genre in getGenres" :value="genre.id" :key="genre.id">{{ genre.name }}</Option>
+                                <Option v-for="(genre,index) in getAllGenres" :value="genre.id" :key="index">{{ genre.name }}</Option>
                             </Select>
                     </FormItem>
 
                     <FormItem label="Select Producer" prop="producerId">
                            <Select v-model="formItemToCopy.producerId" placeholder="Select Producer ">
-                                <Option v-for="producer in getProducers" :value="producer.id" :key="producer.id">{{ producer.name }}</Option>
+                                <Option v-for="(producer,index) in getAllProducers" :value="producer.id" :key="index">{{ producer.name }}</Option>
                             </Select>
                     </FormItem>
 
@@ -93,7 +93,6 @@ const descriptor = {
                    {type: 'string', min: 10, message: 'Number of characters cannot be less than 10'},
                    {type: 'string', max: 500, message: 'Limit the number of characters to 500'} ],
 
-            //coverImage: {type: 'any', required:true, message: 'Cover image is required'}
 
         }
     }    
@@ -103,7 +102,10 @@ const validator = new Schema(descriptor)
 
 export default {
         computed:{
-            ...mapGetters(['getGenres','getActors','getProducers']),
+            ...mapGetters(['getAllGenres','getAllActors','getAllProducers']),
+            title(){
+                return this.isEdit ? 'Edit Movie' : '+ Add Movie'
+            }
         },
         props:['movie','isEdit'],
         data(){
@@ -133,9 +135,8 @@ export default {
 
         },
         methods: {
-            ...mapActions(['postMovieAsync','putMovieAsync','getGenresAsync','getMoviesAsync']),
+            ...mapActions(['postMovie','putMovie','getGenres','getMovies']),
             submit () {
-                console.log("submit")
                 this.movieModal = false
                 this.modify()
                 if(!this.isEdit)this.add()
@@ -144,7 +145,6 @@ export default {
             },
 
             makeEmpty(){
-                console.log("makeEmpty")
                 this.formItemToCopy.name = ''
                 this.formItemToCopy.actorIds = []
                 this.formItemToCopy.genreIds = []
@@ -155,26 +155,19 @@ export default {
             },
             
             async edit(id){
-
-                await this.putMovieAsync({movie: this.formItem,movieId: id})
-                await this.getMoviesAsync()
+                await this.putMovie({movie: this.formItem,movieId: id})
+                await this.getMovies()
             },
             async add(){
-                console.log("add",this.formItem)
-                await this.postMovieAsync(this.formItem)
-                await this.getMoviesAsync()
+                await this.postMovie(this.formItem)
+                await this.getMovies()
             },
 
             handleSubmit () {
-                console.log("handleSubmit")
                 validator.validate({formItem: this.formItemToCopy}).then(() => this.submit()).catch((errors, fields) => console.log(fields,errors))
             },
 
-
-
-
             modify(){ 
-                console.log("modify")
                 this.formItem.name = this.formItemToCopy.name
                 this.formItem.producerId = parseInt(this.formItemToCopy.producerId)
                 this.formItem.movieActorMappingString = this.formItemToCopy.actorIds.join(',')
@@ -185,6 +178,7 @@ export default {
             },
 
             getImage(file){
+                if(!file) return ''
                 let formData=new FormData();
                 let image=file;
                 formData.append("file",image,image.name);
@@ -192,13 +186,13 @@ export default {
             },
 
             handleUpload (file) {
-                console.log("handleUpload",file)
                 this.file = file;
             }
 
         },
+
         created(){
-            this.getGenresAsync()
+            this.getGenres()
             if (this.isEdit){
                 this.formItemToCopy.name = this.movie.name
                 this.formItemToCopy.producerId = this.movie.producerId

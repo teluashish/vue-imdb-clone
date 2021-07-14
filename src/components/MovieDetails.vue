@@ -5,13 +5,13 @@
                     <img :src="movie.coverImage" /> <br /><br />
                     <div align="left">
                     <p><b>Year of release: </b> {{movie.year}}</p>
-                    <p><b>Actors: </b> <span v-for="(actor,index) in movie.actors" :key="index"> {{actor.name}}<span v-if="idx+1 < movie.actors.length">, </span></span></p>
-                    <p><b>Genres: </b> <span v-for="(genre,index) in movie.genres" :key="index"> {{genre.name}}<span v-if="idx+1 < movie.genres.length">, </span> </span></p>
+                    <p><b>Actors: </b> <span v-for="(actor,index) in movie.actors" :key="index"> {{actor.name}}<span v-if="index+1 < movie.actors.length">, </span></span></p>
+                    <p><b>Genres: </b> <span v-for="(genre,index) in movie.genres" :key="index"> {{genre.name}}<span v-if="index+1 < movie.genres.length">, </span> </span></p>
                     <p><b>Producer: </b> {{getProducerName(movie.producerId)}}</p><br />
                     </div>
                     <DetailsModal :entity="movie" :isMovieDetail="true"> </DetailsModal> 
                     <MovieFormModal :isEdit="true" :movie="movie" ></MovieFormModal>
-                    <Button type="error" ghost @click="deleteMovie(movie.id)">Delete</Button>
+                    <Button type="error" ghost @click="deleteMovieById(movie.id)">Delete</Button>
                 </Card>
     </div>
 </template> 
@@ -22,29 +22,29 @@ import MovieFormModal from './MovieFormModal.vue'
 import { mapActions, mapGetters} from 'vuex'
 export default {
     computed:{
-        ...mapGetters(['getProducers'])
+        ...mapGetters(['getAllProducers'])
     },
     props:['movie'],
 
     components:{ DetailsModal, MovieFormModal },
     methods:{
-        ...mapActions(['deleteMovieAsync','getProducersAsync','getActorsAsync','getMoviesAsync']),
+        ...mapActions(['deleteMovie','getProducers','getActors','getMovies']),
     
-        async deleteMovie(id){
-            await this.deleteMovieAsync(id)
-            await this.getMoviesAsync()
+        async deleteMovieById(id){
+            await this.deleteMovie(id)
+            await this.getMovies()
         },
         getProducerName(){
-            if (this.getProducers!==null){
-                for(var i=0;i<this.getProducers.length;i++){
-                    if(this.movie.producerId === this.getProducers[i]['id']) return this.getProducers[i]['name']
+            if (this.getAllProducers!==null){
+                for(var i=0;i<this.getAllProducers.length;i++){
+                    if(this.movie.producerId === this.getAllProducers[i]['id']) return this.getAllProducers[i]['name']
                 }
             }
         }
     },
     created(){
-        this.getProducersAsync()
-        this.getActorsAsync()
+        this.getProducers()
+        this.getActors()
         
     }
 }

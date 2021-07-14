@@ -15,10 +15,10 @@ export const store = new Vuex.Store({
     },
 
     getters: {
-        getAllMovies: state => state.movies ,
-        getAllActors: state => state.actors,
-        getAllProducers: state => state.producers,
-        getAllGenres: state => state.genres,
+        movies: state => state.movies ,
+        actors: state => state.actors,
+        producers: state => state.producers,
+        genres: state => state.genres,
     },
 
     mutations: {

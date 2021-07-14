@@ -1,10 +1,10 @@
 <template>
 <div>
-    <PersonFormModal :isActor="true"> </PersonFormModal> 
+    <person-form-modal :isActor="true"> </person-form-modal> 
     <br><br>
     <div align="center" id="card-body">
     <Row :gutter="20" :type="'flex'">
-        <Card v-for="(actor,index) in getAllActors" :key="index" :actor="actor" :isMovieCard="false" :isActor="true"></Card>
+        <card-details v-for="(actor,index) in actors" :key="index" :actor="actor" :isMovieCard="false" :isActor="true"></card-details>
     </Row> 
     </div>
  </div>
@@ -12,16 +12,16 @@
 
 <script>
     import { mapActions, mapGetters } from 'vuex';
-    import Card from '../components/Card.vue';
+    import CardDetails from '../components/CardDetails.vue';
     import PersonFormModal from '../components/PersonFormModal.vue';
 
     
     export default {
         computed:{
-            ...mapGetters(['getAllActors']),
+            ...mapGetters(['actors']),
         },
         components:{
-            Card,
+            CardDetails,
             PersonFormModal
         },
         methods:{

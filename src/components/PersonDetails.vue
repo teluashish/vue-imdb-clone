@@ -6,7 +6,7 @@
                     <p><b>Date of Birth: </b> {{formattedDOB}}</p>
                     <p><b>Gender:</b> {{person.gender}}</p>
                     <br>
-                    <DetailsModal :entity="person" :isMovieDetail="false"> </DetailsModal>
+                    <details-modal :entity="person" :isMovieDetail="false"> </details-modal>
                     <Button type="error" ghost @click="deletePerson(person.id)">Delete</Button>
                     </div>
                 </Card>

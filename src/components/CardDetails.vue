@@ -1,8 +1,8 @@
 <template>
-    <Col :xs="20" :sm="16" :md="12" :lg="8" :xl="6">
+    <Col :xs="24" :sm="20" :md="16" :lg="12" :xl="8">
         <div id = "card" align="center">
-            <MovieDetails v-if="isMovieCard" :movie="movie" />
-            <PersonDetails v-if="!isMovieCard" :person="person" :isActor="isActor" />
+            <movie-details v-if="isMovieCard" :movie="movie" />
+            <person-details v-if="!isMovieCard" :person="person" :isActor="isActor" />
         </div>
     </Col>
 </template>
@@ -14,7 +14,8 @@ import PersonDetails from './PersonDetails.vue'
 export default {
     props:['movie','actor','producer','isMovieCard','isActor'],
     components:{
-         MovieDetails, PersonDetails
+         MovieDetails, 
+         PersonDetails
     },
     computed:{
         person(){

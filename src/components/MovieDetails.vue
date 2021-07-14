@@ -8,10 +8,11 @@
                     <p><b>Actors: </b> <span v-for="(actor,index) in movie.actors" :key="index"> {{actor.name}}<span v-if="index+1 < movie.actors.length">, </span></span></p>
                     <p><b>Genres: </b> <span v-for="(genre,index) in movie.genres" :key="index"> {{genre.name}}<span v-if="index+1 < movie.genres.length">, </span> </span></p>
                     <p><b>Producer: </b> {{getProducerName(movie.producerId)}}</p><br />
-                    </div>
-                    <DetailsModal :entity="movie" :isMovieDetail="true"> </DetailsModal> 
-                    <MovieFormModal :isEdit="true" :movie="movie" ></MovieFormModal>
+
+                    <details-modal :entity="movie" :isMovieDetail="true"> </details-modal>
+                    <movie-form-modal :isEdit="true" :movie="movie" ></movie-form-modal>
                     <Button type="error" ghost @click="deleteMovieById(movie.id)">Delete</Button>
+                    </div>
                 </Card>
     </div>
 </template> 
@@ -22,7 +23,7 @@ import MovieFormModal from './MovieFormModal.vue'
 import { mapActions, mapGetters} from 'vuex'
 export default {
     computed:{
-        ...mapGetters(['getAllProducers'])
+        ...mapGetters(['producers'])
     },
     props:['movie'],
 
@@ -35,9 +36,9 @@ export default {
             await this.getMovies()
         },
         getProducerName(){
-            if (this.getAllProducers!==null){
-                for(var i=0;i<this.getAllProducers.length;i++){
-                    if(this.movie.producerId === this.getAllProducers[i]['id']) return this.getAllProducers[i]['name']
+            if (this.producers!==null){
+                for(var i=0;i<this.producers.length;i++){
+                    if(this.movie.producerId === this.producers[i]['id']) return this.producers[i]['name']
                 }
             }
         }

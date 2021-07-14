@@ -18,19 +18,19 @@
                     <FormItem label="Select Actors" prop="actorIds">
 
                            <Select v-model="formItemToCopy.actorIds" multiple  placeholder="Select Actors ">
-                                <Option v-for="(actor,index) in getAllActors" :value="actor.id" :key="index">{{ actor.name }}</Option>
+                                <Option v-for="(actor,index) in actors" :value="actor.id" :key="index">{{ actor.name }}</Option>
                             </Select>
                     </FormItem>
 
                     <FormItem label="Select Genres" prop="genreIds">
                            <Select v-model="formItemToCopy.genreIds" multiple  placeholder="Select Genres ">
-                                <Option v-for="(genre,index) in getAllGenres" :value="genre.id" :key="index">{{ genre.name }}</Option>
+                                <Option v-for="(genre,index) in genres" :value="genre.id" :key="index">{{ genre.name }}</Option>
                             </Select>
                     </FormItem>
 
                     <FormItem label="Select Producer" prop="producerId">
                            <Select v-model="formItemToCopy.producerId" placeholder="Select Producer ">
-                                <Option v-for="(producer,index) in getAllProducers" :value="producer.id" :key="index">{{ producer.name }}</Option>
+                                <Option v-for="(producer,index) in producers" :value="producer.id" :key="index">{{ producer.name }}</Option>
                             </Select>
                     </FormItem>
 
@@ -102,7 +102,7 @@ const validator = new Schema(descriptor)
 
 export default {
         computed:{
-            ...mapGetters(['getAllGenres','getAllActors','getAllProducers']),
+            ...mapGetters(['genres','actors','producers']),
             title(){
                 return this.isEdit ? 'Edit Movie' : '+ Add Movie'
             }

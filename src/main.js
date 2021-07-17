@@ -8,7 +8,7 @@ import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 import {store} from './store/store';
 
-
+export const eventBus = new Vue();
 Vue.use(ViewUI);
 
 axios.defaults.baseURL = "https://localhost:64536/";

@@ -1,12 +1,12 @@
 <template>
-    <div id="formModal">
-        <Button type="primary" ghost @click="personModal = true">{{title}}</Button>
+    <span id="formModal">
+        <Button type="primary" ghost @click="personModal = true">+Add {{title}}</Button>
         <Modal v-model="personModal" width="600">
             <p slot="header" style="text-align:center">
-                <span>Fill Details</span>
+                <span>Fill {{title}} Details</span>
             </p>
-            <div style="text-align:center">
-                <Form :model="formItem" :label-width="120" ref="formItem" >
+            <div id="person-form">
+                <Form :model="formItem" :label-width="120" ref="formItem" :rules="ruleValidate" >
                     <FormItem label="Name" prop="name">
                        <Input v-model="formItem.name" placeholder="Enter Name"></Input>
                     </FormItem>
@@ -34,49 +34,16 @@
 
                 </Form>
             </div>
-
+            
             <div slot="footer">
-                <Button type="primary" @click="handleSubmit()">Submit</Button>
+                <Button type="primary" @click="submit()">Submit</Button>
             </div>
         </Modal>
-    </div>
+    </span>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
-import Schema from 'async-validator'
-
-const descriptor = {
-    formItem:{
-        type: 'object',
-        required: true,
-        fields:{
-            name: [ {required:true, type: 'string', pattern: new RegExp(/^[a-z ,.'-]+$/i), message:'Invalid full name'}],
-
-            bio: [ { required: true, message: 'Please enter a Personal Introduction'},
-                   {type: 'string', min: 10, message: 'Number of characters cannot be less than 10'},
-                   {type: 'string', max: 500, message: 'Limit the number of characters to 500'} ],
-
-            gender: {type: 'string', required: 'true', message: 'Please choose a gender'},
-
-            dob: {
-                required: true,
-                type: 'date', 
-                // eslint-disable-next-line no-unused-vars
-                validator(rule, value, callback, source, options){
-                    return Math.floor((new Date() - new Date(value).getTime()) / 3.15576e+10) > 18
-
-                },
-                message: 'Please choose a valid date of birth'
-            }
-
-        }
-    }    
-}
-
-const validator = new Schema(descriptor)
-
-
 
 
 export default {
@@ -85,17 +52,39 @@ export default {
         data(){
             return {
                 personModal: false,
+                personId: null,
                 formItem: {
                     name: '',
                     bio: '',
                     dob:null,
                     gender: ''
+                },
+                ruleValidate:{
+                        name: [ {required:true, type: 'string', pattern: new RegExp(/^[a-z ,.'-]+$/i), message:'Invalid full name'}],
+
+                        bio: [ { required: true, message: 'Please enter a Personal Introduction'},
+                            {type: 'string', min: 10, message: 'Number of characters cannot be less than 10'},
+                            {type: 'string', max: 500, message: 'Limit the number of characters to 500'} ],
+
+                        gender: {type: 'string', required: 'true', message: 'Please choose a gender'},
+
+                        dob: {
+                            required: true,
+                            type: 'date', 
+                            // eslint-disable-next-line no-unused-vars
+                            validator(rule, value, callback, source, options){
+                                return Math.floor((new Date() - new Date(value).getTime()) / 3.15576e+10) > 18
+
+                            },
+                            message: 'Please choose a valid date of birth'
+                        }
                 }
             }
         },
+
         computed:{
             title(){
-                return this.isActor ? '+Add Actor' : '+Add Producer'
+                return this.isActor ? 'Actor' : 'Producer'
             }
         },
 
@@ -109,17 +98,20 @@ export default {
                return Math.floor((new Date() - new Date(dob).getTime()) / 3.15576e+10)
             },
 
-
+            
            async add(){
+
                 if (this.isActor){
-                    await this.postActor(this.formItem)
+                    this.personId = await this.postActor(this.formItem)
                     await this.getActors()
+                    this.$emit('actorAdded',this.personId)
                 }
                 else { 
-                    await this.postProducer(this.formItem)
+                    this.personId = await this.postProducer(this.formItem)
                     await this.getProducers()
+                    this.$emit('producerAdded',this.personId)
                 }
-                this.makeEmpty()
+                this.makeEmpty() 
             },
 
             makeEmpty(){
@@ -127,18 +119,17 @@ export default {
                 this.formItem.bio = ''
                 this.formItem.dob = null
                 this.formItem.gender = ''
+                this.personId = null
             },
-
-            handleSubmit () {
-                validator.validate({formItem: this.formItem})
-                    .then(() => this.submit())
-                    .catch((errors,fields) => {
-                        console.log(errors,fields)
-                        })
-            }
 
         }
         
 }
 
 </script>
+
+<style scoped>
+  #person-form{
+      text-align:left
+  }
+</style>

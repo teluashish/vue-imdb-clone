@@ -2,7 +2,7 @@
 <template>
 <div>
     <br>
-    <movie-form-modal :isEdit="false" ></movie-form-modal>
+    <movie-form :isEdit="false" ></movie-form>
     <br><br>
     <br>
     <div align="center">
@@ -15,7 +15,7 @@
 
 <script>
     import CardDetails from '../components/CardDetails.vue';
-    import MovieFormModal from '../components/MovieFormModal.vue';
+    import MovieForm from '../components/MovieForm.vue';
     import {mapGetters, mapActions} from 'vuex'
     
     
@@ -29,7 +29,7 @@
         },
         components:{
             CardDetails,
-            MovieFormModal
+            MovieForm
         },
 
         created(){

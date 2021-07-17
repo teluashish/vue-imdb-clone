@@ -8,10 +8,19 @@
                     <p><b>Actors: </b> <span v-for="(actor,index) in movie.actors" :key="index"> {{actor.name}}<span v-if="index+1 < movie.actors.length">, </span></span></p>
                     <p><b>Genres: </b> <span v-for="(genre,index) in movie.genres" :key="index"> {{genre.name}}<span v-if="index+1 < movie.genres.length">, </span> </span></p>
                     <p><b>Producer: </b> {{getProducerName(movie.producerId)}}</p><br />
-
+                    <Row>
+                    <Col>
                     <details-modal :entity="movie" :isMovieDetail="true"> </details-modal>
-                    <movie-form-modal :isEdit="true" :movie="movie" ></movie-form-modal>
+                    </Col>
+                    <Col span="1"> </Col>
+                    <Col>
+                    <movie-form :isEdit="true" :movie="movie" ></movie-form>
+                    </Col>
+                    <Col span="1"> </Col>
+                    <Col>
                     <Button type="error" ghost @click="deleteMovieById(movie.id)">Delete</Button>
+                    </Col>
+                    </Row>
                     </div>
                 </Card>
     </div>
@@ -19,7 +28,7 @@
 
 <script>
 import DetailsModal from '../components/DetailsModal.vue'
-import MovieFormModal from './MovieFormModal.vue'
+import MovieForm from './MovieForm.vue'
 import { mapActions, mapGetters} from 'vuex'
 export default {
     computed:{
@@ -27,7 +36,7 @@ export default {
     },
     props:['movie'],
 
-    components:{ DetailsModal, MovieFormModal },
+    components:{ DetailsModal, MovieForm },
     methods:{
         ...mapActions(['deleteMovie','getProducers','getActors','getMovies']),
     

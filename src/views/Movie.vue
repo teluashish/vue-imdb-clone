@@ -1,6 +1,5 @@
 <template>
     <div id="movie" align="left">
-                {{formItemToCopy}}
                 <Form :model="formItemToCopy" :label-width="150"  ref="formItemToCopy" :rules="ruleValidate">
                    <FormItem >
                     <h3 align="left">Fill Movie Details</h3>

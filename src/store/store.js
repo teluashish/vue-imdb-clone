@@ -11,7 +11,9 @@ export const store = new Vuex.Store({
         movies : null,
         actors : null,
         producers : null,
-        genres: null
+        genres: null,
+        actorId: null,
+        producerId: null
     },
 
     getters: {
@@ -52,8 +54,11 @@ export const store = new Vuex.Store({
                     movie.coverImage = response.data
                 }).catch(error => window.alert(error))
             }
-            await axios.post('/movies/',movie).then(movieId => 
-                    console.log('added movie id: '+movieId)).catch(error => 
+            // eslint-disable-next-line no-unused-vars
+            await axios.post('/movies/',movie).then(response => {
+                    console.log('added movie');
+                    window.location.href = 'http://localhost:8080/movies'
+                }).catch(error => 
                         window.alert('add movie: '+error))
         },
 
@@ -64,9 +69,12 @@ export const store = new Vuex.Store({
                     movie.coverImage = response.data
                 ).catch(error => window.alert(error))
             }
-            await axios.put('/movies/'+movieId, movie).then(movieId => 
-                console.log('updated movie id: '+movieId)).catch(error => 
-                    window.alert('movie uodate '+error))
+            // eslint-disable-next-line no-unused-vars
+            await axios.put('/movies/'+movieId, movie).then(response => {
+                console.log('updated movie')
+                window.location.href = 'http://localhost:8080/movies'
+            }).catch(error => 
+                    window.alert('movie update '+error))
         },
         async deleteMovie(context, movieId){
             await axios.delete('/movies/'+movieId).then(movieId => 
@@ -83,9 +91,12 @@ export const store = new Vuex.Store({
             
         },
        async postActor(context, actor){
-            await axios.post('/actors/',actor).then(actorId => 
-                console.log('added actor id: '+actorId)).catch(error => 
+            await axios.post('/actors/',actor).then(response =>{
+                console.log('added actor id: '+response.data)
+                this.actorId = response.data
+                }).catch(error => 
                     window.alert('add actor: '+error));
+            return this.actorId
         },
         async putActor(context, actor, actorId){
             await axios.put('/actors/'+actorId, actor).then(actorId => 
@@ -93,7 +104,7 @@ export const store = new Vuex.Store({
                     window.alert('actor update '+error));
         },
         async deleteActor(context, actorId){
-            await axios.delete('/actors/'+actorId).then(actorId => 
+            axios.delete('/actors/'+actorId).then(actorId => 
                 console.log(actorId)).catch(error => 
                     window.alert('actor deletion '+actorId+' '+error))
         },
@@ -106,9 +117,12 @@ export const store = new Vuex.Store({
                 )
         },
         async postProducer(context, producer){
-            await axios.post('/producers/',producer).then(producerId => 
-                console.log('added producer id: '+producerId)).catch(error => 
-                    window.alert('add producer: '+error));
+            await axios.post('/producers/',producer).then(response =>{ 
+                console.log('added producer id: '+response.data)
+                this.producerId = response.data
+            }).catch(error => 
+                window.alert('add producer: '+error));
+            return this.producerId
         },
         async putProducer(context, producer, producerId){
             await axios.put('/producers/'+producerId, producer).then(producerId => 

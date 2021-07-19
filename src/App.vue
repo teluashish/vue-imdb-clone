@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <header-view></header-view>
-    <router-view></router-view> 
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import HeaderView from './views/HeaderView.vue';
+import HeaderView from "./views/HeaderView.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HeaderView
-  }
-}
+    HeaderView,
+  },
+};
 </script>
 
 <style>
@@ -24,6 +24,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-
 }
 </style>

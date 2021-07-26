@@ -1,5 +1,5 @@
 <template>
-  <div id="personDetailsComponent" align="center">
+  <div id="personDetailsCard">
     <Card :bordered="false">
       <p slot="title">{{ person.name }}</p>
       <div align="left">
@@ -8,52 +8,42 @@
         <br />
         <Row>
           <Col>
-            <details-modal :entity="person" :isMovieDetail="false">
-            </details-modal>
+            <Button type="dashed" @click="displayModal"
+              >Show more details</Button
+            >
           </Col>
           <Col span="1"></Col>
           <Col>
-            <Button type="error" ghost @click="deletePerson(person.id)"
-              >Delete</Button
-            >
+            <Button type="error" ghost @click="deletePerson">Delete</Button>
           </Col>
         </Row>
       </div>
     </Card>
   </div>
-</template> 
+</template>
 
 <script>
-import { mapActions } from "vuex";
-import DetailsModal from "../components/DetailsModal.vue";
+import { mapMutations } from "vuex";
 export default {
-  props: ["person", "isActor"],
-  components: { DetailsModal },
+  props: ["person", "title"],
   computed: {
     formattedDOB() {
       return new Date(this.person.dob).toLocaleDateString();
     },
   },
   methods: {
-    ...mapActions([
-      "deleteActor",
-      "deleteProducer",
-      "getActors",
-      "getProducers",
-    ]),
-    async deletePerson(id) {
-      if (this.isActor) {
-        await this.deleteActor(id);
-        await this.getActors();
-      } else {
-        await this.deleteProducer(id);
-        await this.getProducers();
-      }
+    ...mapMutations(["assignEntity"]),
+    deletePerson() {
+      this.$emit("deletePerson", {
+        id: this.person.id,
+        title: this.title,
+        person: this.person,
+      });
+    },
+    displayModal() {
+      this.$emit("displayDetailsModal");
+      this.assignEntity(this.person);
     },
   },
 };
 </script>
-        
-        
-        
-        

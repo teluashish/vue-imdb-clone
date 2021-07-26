@@ -1,13 +1,13 @@
 <template>
   <span id="formModal">
-    <Button type="primary" ghost @click="personModal = true"
+    <Button type="primary" ghost @click="displayPersonModal"
       >+Add {{ title }}</Button
     >
-    <Modal v-model="personModal" width="600">
-      <p slot="header" style="text-align: center">
+    <Modal v-model="personModal" id="personModal">
+      <p slot="header" id="header">
         <span>Fill {{ title }} Details</span>
       </p>
-      <div id="person-form">
+      <div id="personForm">
         <Form
           :model="formItem"
           :label-width="120"
@@ -50,20 +50,18 @@
 
       <div slot="footer">
         <Button type="primary" @click="submit()">Submit</Button>
+        <Button @click="handleReset('formItem')" id="resetButton">Reset</Button>
       </div>
     </Modal>
   </span>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-
 export default {
-  props: ["isActor"],
+  props: ["title"],
   data() {
     return {
       personModal: false,
-      personId: null,
       formItem: {
         name: "",
         bio: "",
@@ -81,7 +79,11 @@ export default {
         ],
 
         bio: [
-          { required: true, message: "Please enter a Personal Introduction" },
+          {
+            required: true,
+            message: "Please enter a Personal Introduction",
+            trigger: "blur",
+          },
           {
             type: "string",
             min: 10,
@@ -117,53 +119,49 @@ export default {
     };
   },
 
-  computed: {
-    title() {
-      return this.isActor ? "Actor" : "Producer";
-    },
-  },
-
   methods: {
-    ...mapActions(["postActor", "postProducer", "getActors", "getProducers"]),
     submit() {
-      this.personModal = false;
-      this.add();
+      this.$refs["formItem"].validate((valid) => {
+        if (valid) {
+          this.$Message.success("Success!");
+          this.add();
+          this.personModal = false;
+        } else {
+          this.$Message.error("Fail!");
+        }
+      });
     },
     getAge(dob) {
       return Math.floor((new Date() - new Date(dob).getTime()) / 3.15576e10);
     },
 
     async add() {
-      if (this.isActor) {
-        this.personId = await this.postActor(this.formItem);
-        await this.getActors();
-        this.$emit("actorAdded", this.personId);
-      } else {
-        this.personId = await this.postProducer(this.formItem);
-        await this.getProducers();
-        this.$emit("producerAdded", this.personId);
-      }
-      this.makeEmpty();
+      this.$emit("addPerson", { formItem: this.formItem, title: this.title });
+      this.handleReset("formItem");
+    },
+
+    displayPersonModal() {
+      this.personModal = true;
     },
 
     handleReset(name) {
       this.$refs[name].resetFields();
-    },
-
-    makeEmpty() {
-      this.formItem.name = "";
-      this.formItem.bio = "";
-      this.formItem.dob = null;
-      this.formItem.gender = "";
-      this.personId = null;
-      this.handleReset('personFormDetails')
     },
   },
 };
 </script>
 
 <style scoped>
-#person-form {
+#personForm {
   text-align: left;
+}
+#resetButton {
+  margin-left: 8px;
+}
+#header {
+  text-align: center;
+}
+#personModal {
+  width: 600px;
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div id="movieDetailsComponent">
+  <div id="movieDetailsCard">
     <Card :bordered="false">
       <p slot="title">{{ movie.name }}</p>
       <img :src="movie.coverImage" /> <br /><br />
-      <div align="left">
+      <div id="movieDetails">
         <p><b>Year of release: </b> {{ movie.year }}</p>
         <p>
           <b>Actors: </b>
@@ -23,43 +23,50 @@
         <br />
         <Row>
           <Col>
-            <details-modal :entity="movie" :isMovieDetail="true">
-            </details-modal>
-          </Col>
-          <Col span="1"> </Col>
-          <Col>
-            <movie-form :isEdit="true" :movie="movie"></movie-form>
-          </Col>
-          <Col span="1"> </Col>
-          <Col>
-            <Button type="error" ghost @click="deleteMovieById(movie.id)"
-              >Delete</Button
+            <Button type="dashed" @click="displayModal"
+              >Show more details</Button
             >
+          </Col>
+          <Col span="1"> </Col>
+          <Col>
+            <Button
+              :to="{ name: 'movie', params: { movie: movie, isEdit: true } }"
+              type="primary"
+              ghost
+              >Edit Movie</Button
+            >
+          </Col>
+          <Col span="1"> </Col>
+          <Col>
+            <Button type="error" ghost @click="deleteMovieById">Delete</Button>
           </Col>
         </Row>
       </div>
     </Card>
   </div>
-</template> 
+</template>
 
 <script>
-import DetailsModal from "../components/DetailsModal.vue";
-import MovieForm from "./MovieForm.vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+
 export default {
   computed: {
     ...mapGetters(["producers"]),
   },
+
   props: ["movie"],
 
-  components: { DetailsModal, MovieForm },
   methods: {
-    ...mapActions(["deleteMovie", "getProducers", "getActors", "getMovies"]),
-
-    async deleteMovieById(id) {
-      await this.deleteMovie(id);
-      await this.getMovies();
+    ...mapMutations(["assignEntity"]),
+    displayModal() {
+      this.assignEntity(this.movie);
+      this.$emit("displayDetailsModal");
     },
+
+    deleteMovieById() {
+      this.$emit("deleteMovieById", this.movie);
+    },
+
     getProducerName() {
       if (this.producers !== null) {
         for (var i = 0; i < this.producers.length; i++) {
@@ -69,19 +76,16 @@ export default {
       }
     },
   },
-  created() {
-    this.getProducers();
-    this.getActors();
-  },
 };
 </script>
-        
-        
-        
+
 <style scoped>
 img {
   height: 10%;
   width: 60%;
   border-radius: 2%;
 }
-</style>     
+#movieDetails {
+  text-align: left;
+}
+</style>

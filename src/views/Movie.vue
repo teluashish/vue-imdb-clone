@@ -1,15 +1,17 @@
 <template>
-
-  <div id="movie" align="left">
+  <div id="movieForm">
     <Form
       :model="formItemToCopy"
-      :label-width="150"
+      :label-width="300"
       ref="formItemToCopy"
       :rules="ruleValidate"
     >
+      <br />
+
       <FormItem>
-        <h3 align="left">Fill Movie Details</h3>
+        <h2 align="left">Fill Movie Details</h2>
       </FormItem>
+
       <FormItem label="Title" prop="name">
         <Row>
           <Col span="16">
@@ -52,7 +54,10 @@
           </Col>
           <Col span="1"></Col>
           <Col span="4">
-            <person-form-modal :isActor="true" v-on:actorAdded="selectActor">
+            <person-form-modal
+              :title="'actor'"
+              @addPerson="addPersonInMovieForm"
+            >
             </person-form-modal>
           </Col>
         </Row>
@@ -96,8 +101,8 @@
           <Col span="1"></Col>
           <Col span="4">
             <person-form-modal
-              :isActor="false"
-              v-on:producerAdded="selectProducer"
+              :title="'producer'"
+              @addPerson="addPersonInMovieForm"
             >
             </person-form-modal>
           </Col>
@@ -143,9 +148,9 @@
     <Row>
       <Col span="3"></Col>
       <Col>
-        <Button type="primary" ghost @click="handleSubmit('formItemToCopy')"
-          >Submit</Button
-        >
+        <Button type="primary" ghost @click="handleSubmit('formItemToCopy')">{{
+          submitStatus
+        }}</Button>
       </Col>
       <Col span="1"></Col>
       <Col>
@@ -173,7 +178,9 @@ export default {
       movie: null,
       isEdit: false,
       movieModal: false,
-      loadingStatus: false,
+      submitStatus: "Submit",
+      personId: "",
+
       formItem: {
         name: "",
         movieActorMappingString: "",
@@ -183,6 +190,7 @@ export default {
         plot: "",
         coverImage: "",
       },
+
       formItemToCopy: {
         name: "",
         actorIds: [],
@@ -256,54 +264,39 @@ export default {
   },
 
   methods: {
-    ...mapActions(["postMovie", "putMovie", "getGenres", "getMovies","getProducers","getActors"]),
+    ...mapActions([
+      "getGenres",
+      "getProducers",
+      "getActors",
+      "postActor",
+      "postProducer",
+    ]),
     submit() {
       this.movieModal = false;
       this.modify();
       if (!this.isEdit) this.add();
       else this.edit(this.movie.id);
-      this.makeEmpty();
-      this.handleReset("formItemToCopy");
     },
 
-    makeEmpty() {
-      this.formItemToCopy.name = "";
-      this.formItemToCopy.actorIds = [];
-      this.formItemToCopy.genreIds = [];
-      this.formItemToCopy.producerIds = [];
-      this.formItemToCopy.producerId = null;
-      this.formItemToCopy.producerDefaultLabel = "";
-      this.formItemToCopy.year = "";
-      this.formItemToCopy.plot = "";
-      this.formItemToCopy.coverImage = null;
+    edit(id) {
+      this.$router.app.$emit("editMovie", {
+        movie: this.formItem,
+        movieId: id,
+      });
     },
-
-    async edit(id) {
-      await this.putMovie({ movie: this.formItem, movieId: id });
-      await this.getMovies();
-    },
-    async add() {
-      await this.postMovie(this.formItem);
-      await this.getMovies();
-    },
-
-    selectActor(id) {
-      this.formItemToCopy.actorIds.push(id);
-    },
-    selectProducer(id) {
-      var newLabel = this.getProducerLabel(id);
-      this.formItemToCopy.producerIds.push({ value: id, label: newLabel });
-      this.formItemToCopy.producerId = id
-      this.formItemToCopy.producerDefaultLabel = newLabel
+    add() {
+      this.$router.app.$emit("addMovie", this.formItem);
     },
 
     modify() {
       this.formItem.name = this.formItemToCopy.name;
       this.formItem.producerId = parseInt(this.formItemToCopy.producerId);
-      this.formItem.movieActorMappingString =
-        this.formItemToCopy.actorIds.join(",");
-      this.formItem.movieGenreMappingString =
-        this.formItemToCopy.genreIds.join(",");
+      this.formItem.movieActorMappingString = this.formItemToCopy.actorIds.join(
+        ","
+      );
+      this.formItem.movieGenreMappingString = this.formItemToCopy.genreIds.join(
+        ","
+      );
       this.formItem.plot = this.formItemToCopy.plot;
       this.formItem.year = parseInt(this.formItemToCopy.year);
       this.formItem.coverImage = this.getImage(this.formItemToCopy.coverImage);
@@ -324,6 +317,7 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
+          this.submitStatus = "Submitting...Please wait !!";
           this.submit();
           this.$Message.success("Success!");
         } else {
@@ -332,10 +326,10 @@ export default {
       });
     },
 
-    async init(){
-        await this.getActors()
-        await this.getProducers()
-        await this.getGenres()
+    async init() {
+      await this.getActors();
+      await this.getProducers();
+      await this.getGenres();
     },
 
     getProducerLabel(id) {
@@ -345,10 +339,33 @@ export default {
     handleReset(name) {
       this.$refs[name].resetFields();
     },
+
+    producerAdded(id) {
+      var newLabel = this.getProducerLabel(id);
+      this.formItemToCopy.producerIds.push({ value: id, label: newLabel });
+      this.formItemToCopy.producerId = id;
+      this.formItemToCopy.producerDefaultLabel = newLabel;
+    },
+
+    actorAdded(id) {
+      this.formItemToCopy.actorIds.push(id);
+    },
+
+    async addPersonInMovieForm(personDetails) {
+      if (personDetails.title === "producer") {
+        this.personId = await this.postProducer(personDetails.formItem);
+        await this.getProducers();
+        this.producerAdded(this.personId);
+      } else if (personDetails.title === "actor") {
+        this.personId = await this.postActor(personDetails.formItem);
+        await this.getActors();
+        this.actorAdded(this.personId);
+      }
+    },
   },
 
-  created() {
-    this.init()
+  async created() {
+    await this.init();
     this.movie = this.$route.params.movie;
     this.isEdit = this.$route.params.isEdit;
     this.producers.map((producer) =>
@@ -372,3 +389,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#movieForm {
+  text-align: left;
+}
+</style>

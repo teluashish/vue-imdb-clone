@@ -1,8 +1,10 @@
 <template>
   <span id="detailsModal">
-    <Button type="dashed" @click="entityModal = true">Show more details</Button>
-    <Modal v-model="entityModal" :title="entity.name">
-      <p>{{ isMovieDetail ? entity.plot : entity.bio }}</p>
+    <Modal v-model="displayModal">
+      <slot name="header"></slot>
+
+      <slot name="main"></slot>
+
       <div slot="footer">
         <Button type="primary" @click="ok">Ok</Button>
       </div>
@@ -12,17 +14,23 @@
 
 <script>
 export default {
-  props: ["entity", "isMovieDetail"],
+  props: ["entityModal"],
   data() {
     return {
-      entityModal: false,
+      displayModal: false,
     };
   },
+  watch: {
+    entityModal() {
+      this.displayModal = this.entityModal;
+    },
+  },
+
   methods: {
     ok() {
-      this.entityModal = false;
+      this.displayModal = false;
+      this.$emit("closeDetailsModal");
     },
   },
 };
 </script>
-

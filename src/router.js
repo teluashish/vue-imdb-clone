@@ -3,8 +3,7 @@ import Router from "vue-router";
 import Actors from "./views/Actors.vue";
 import Producers from "./views/Producers.vue";
 import Movies from "./views/Movies.vue";
-import Movie from "./views/Movie.vue"
-
+import Movie from "./views/Movie.vue";
 
 Vue.use(Router);
 
@@ -15,22 +14,22 @@ export default new Router({
     {
       path: "/actors",
       name: "actors",
-      component: Actors
+      component: Actors,
     },
     {
       path: "/producers",
       name: "producers",
-      component: Producers
+      component: Producers,
     },
     {
       path: "/movies",
       name: "movies",
-      component: Movies
+      component: Movies,
     },
     {
       path: "/movie",
       name: "movie",
-      component: Movie
-    }
-  ]
+      component: Movie,
+    },
+  ],
 });

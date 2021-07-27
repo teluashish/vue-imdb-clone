@@ -5,7 +5,3 @@
     <router-link to="/producers">Producers </router-link>
   </div>
 </template>
-
-
-
-

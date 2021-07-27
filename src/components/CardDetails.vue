@@ -1,8 +1,19 @@
 <template>
   <Col :xs="24" :sm="20" :md="16" :lg="12" :xl="8">
-    <div id="card" align="center">
-      <movie-details v-if="isMovieCard" :movie="movie" />
-      <person-details v-if="!isMovieCard" :person="person" :isActor="isActor" />
+    <div id="details">
+      <movie-details
+        v-if="isMovieCard"
+        :movie="movie"
+        @deleteMovieById="deleteMovieById"
+        @displayDetailsModal="displayDetailsModal"
+      />
+      <person-details
+        v-if="!isMovieCard"
+        :person="person"
+        :title="title"
+        @deletePerson="deletePerson"
+        @displayDetailsModal="displayDetailsModal"
+      />
     </div>
   </Col>
 </template>
@@ -12,22 +23,32 @@ import MovieDetails from "./MovieDetails.vue";
 import PersonDetails from "./PersonDetails.vue";
 
 export default {
-  props: ["movie", "actor", "producer", "isMovieCard", "isActor"],
+  props: ["movie", "actor", "producer", "isMovieCard", "title"],
   components: {
     MovieDetails,
     PersonDetails,
   },
   computed: {
     person() {
-      return this.isActor ? this.actor : this.producer;
+      return this.actor || this.producer;
+    },
+  },
+  methods: {
+    deletePerson(personDetails) {
+      this.$emit("deletePerson", personDetails);
+    },
+    deleteMovieById(movie) {
+      this.$emit("deleteMovieById", movie);
+    },
+    displayDetailsModal() {
+      this.$emit("displayDetailsModal");
     },
   },
 };
 </script>
 
 <style scoped>
-#card {
-  height: 100%;
-  width: 100%;
+#details {
+  text-align: center;
 }
 </style>

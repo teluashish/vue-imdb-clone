@@ -1,11 +1,23 @@
 <template>
   <div>
+    <br />
     <person-form-modal :title="'producer'" @addPerson="addPerson">
     </person-form-modal>
+    <AutoComplete
+      id="personSearch"
+      v-model="searchInput"
+      placeholder="Search Producers"
+      @on-search="handleSearch"
+      style="width:200px"
+      icon="ios-search"
+      @on-clear="clearSearch"
+      clearable
+    >
+    </AutoComplete>
     <br /><br />
-    <Row :gutter="20" :type="'flex'">
+    <Row type="flex">
       <card-details
-        v-for="(producer, index) in producers"
+        v-for="(producer, index) in searchProducers"
         :key="index"
         :producer="producer"
         :isMovieCard="false"
@@ -46,12 +58,15 @@ export default {
   data() {
     return {
       personId: "",
+      searchInput: "",
+      searchProducers: null,
       isDisplayDetailsModal: false,
     };
   },
   computed: {
     ...mapGetters(["producers", "entity"]),
   },
+
   components: {
     CardDetails,
     PersonFormModal,
@@ -61,12 +76,18 @@ export default {
     ...mapActions(["getProducers", "postProducer", "deleteProducer"]),
     async init() {
       await this.getProducers();
+      this.searchProducers = this.producers;
+    },
+
+    clearSearch() {
+      this.searchProducers = this.producers;
     },
 
     async addPerson(personDetails) {
       if (personDetails.title === "producer") {
         this.personId = await this.postProducer(personDetails.formItem);
         await this.getProducers();
+        this.searchProducers = this.producers;
       }
     },
     displayDetailsModal() {
@@ -76,6 +97,19 @@ export default {
     closeDetailsModal() {
       this.isDisplayDetailsModal = false;
     },
+
+    handleSearch(value) {
+      if (value.length > 0) {
+        this.searchProducers = [];
+        this.producers.forEach((producer) => {
+          if (producer.name.toLowerCase().indexOf(value.toLowerCase()) !== -1)
+            this.searchProducers.push(producer);
+        });
+      } else {
+        this.searchProducers = this.producers;
+      }
+    },
+
     deletePerson(personDetails) {
       this.$Modal.confirm({
         title: "Confirm " + personDetails.person.name + " Delete",
@@ -90,6 +124,7 @@ export default {
           if (personDetails.title === "producer") {
             await this.deleteProducer(personDetails.id);
             await this.getProducers();
+            this.searchProducers = this.producers;
           }
           this.$Modal.remove();
         },
@@ -102,3 +137,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#personSearch {
+  margin: 10px;
+}
+</style>

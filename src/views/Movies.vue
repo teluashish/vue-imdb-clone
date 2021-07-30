@@ -1,19 +1,28 @@
 <template>
   <div>
     <br />
-    <span id="movieEditForm">
-      <Button
-        :to="{ name: 'movie', params: { movie: null, isEdit: false } }"
-        type="primary"
-        ghost
-        >+ Add Movie</Button
-      >
-    </span>
+    <Button
+      :to="{ name: 'movie', params: { movie: null, isEdit: false } }"
+      type="primary"
+      ghost
+      id="movieEditForm"
+      >+ Add Movie</Button
+    >
+    <AutoComplete
+      v-model="searchInput"
+      placeholder="Search Movies"
+      @on-search="handleSearch"
+      style="width:200px"
+      icon="ios-search"
+      @on-clear="clearSearch"
+      clearable
+    >
+    </AutoComplete>
     <br /><br />
     <br />
-    <Row :gutter="20" :type="'flex'">
+    <Row type="flex">
       <card-details
-        v-for="(movie, index) in movies"
+        v-for="(movie, index) in searchMovies"
         :key="index"
         :movie="movie"
         :isMovieCard="true"
@@ -53,6 +62,8 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
+      searchInput: "",
+      searchMovies: null,
       isDisplayDetailsModal: false,
     };
   },
@@ -70,6 +81,22 @@ export default {
       this.isDisplayDetailsModal = false;
     },
 
+    handleSearch(value) {
+      if (value.length > 0) {
+        this.searchMovies = [];
+        this.movies.forEach((movie) => {
+          if (movie.name.toLowerCase().indexOf(value.toLowerCase()) !== -1)
+            this.searchMovies.push(movie);
+        });
+      } else {
+        this.searchMovies = this.movies;
+      }
+    },
+
+    clearSearch() {
+      this.searchMovies = this.movies;
+    },
+
     deleteMovieById(movie) {
       this.$Modal.confirm({
         title: 'Confirm "' + movie.name + '" Delete ',
@@ -83,9 +110,14 @@ export default {
         onOk: async () => {
           await this.deleteMovie(movie.id);
           await this.getMovies();
+          this.searchMovies = this.movies;
           this.$Modal.remove();
         },
       });
+    },
+    async init() {
+      await this.getMovies();
+      this.searchMovies = this.movies;
     },
   },
 
@@ -95,7 +127,7 @@ export default {
   },
 
   created() {
-    this.getMovies();
+    this.init();
     this.$router.app.$on("addMovie", async (movie) => {
       await this.postMovie(movie);
       window.location.href = "http://localhost:8080/movies";
@@ -107,3 +139,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#movieEditForm {
+  margin: 10px;
+}
+</style>

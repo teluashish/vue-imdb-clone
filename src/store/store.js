@@ -12,7 +12,7 @@ export const store = new Vuex.Store({
     producers: null,
     genres: null,
     actorId: null,
-    producerId: null,
+    producerId: null
   },
 
   getters: {

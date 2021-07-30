@@ -1,12 +1,25 @@
 <template>
   <div>
+    <br />
     <person-form-modal :title="'actor'" @addPerson="addPerson">
     </person-form-modal>
+    <AutoComplete
+      id="personSearch"
+      v-model="searchInput"
+      placeholder="Search Actors"
+      @on-search="handleSearch"
+      style="width:200px"
+      icon="ios-search"
+      @on-clear="clearSearch"
+      clearable
+    >
+    </AutoComplete>
+
     <br /><br />
 
-    <Row :gutter="20" :type="'flex'">
+    <Row type="flex">
       <card-details
-        v-for="(actor, index) in actors"
+        v-for="(actor, index) in searchActors"
         :key="index"
         :actor="actor"
         :isMovieCard="false"
@@ -47,6 +60,8 @@ export default {
   data() {
     return {
       personId: "",
+      searchInput: "",
+      searchActors: null,
       isDisplayDetailsModal: false,
     };
   },
@@ -64,12 +79,14 @@ export default {
 
     async init() {
       await this.getActors();
+      this.searchActors = this.actors;
     },
 
     async addPerson(personDetails) {
       if (personDetails.title === "actor") {
         this.personId = await this.postActor(personDetails.formItem);
         await this.getActors();
+        this.searchActors = this.actors;
       }
     },
 
@@ -79,6 +96,22 @@ export default {
 
     closeDetailsModal() {
       this.isDisplayDetailsModal = false;
+    },
+
+    handleSearch(value) {
+      if (value.length > 0) {
+        this.searchActors = [];
+        this.actors.forEach((actor) => {
+          if (actor.name.toLowerCase().indexOf(value.toLowerCase()) !== -1)
+            this.searchActors.push(actor);
+        });
+      } else {
+        this.searchActors = this.actors;
+      }
+    },
+
+    clearSearch() {
+      this.searchActors = this.actors;
     },
 
     deletePerson(personDetails) {
@@ -96,6 +129,7 @@ export default {
           if (personDetails.title === "actor") {
             await this.deleteActor(personDetails.id);
             await this.getActors();
+            this.searchActors = this.actors;
           }
           this.$Modal.remove();
         },
@@ -108,3 +142,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#personSearch {
+  margin: 10px;
+}
+</style>

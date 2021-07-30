@@ -1,8 +1,9 @@
 <template>
-  <div id="movieDetailsCard">
-    <Card :bordered="false">
+  <Col :xs="24" :sm="20" :md="12" :lg="8" :xl="6">
+    <Card id="movieCard">
       <p slot="title">{{ movie.name }}</p>
-      <img :src="movie.coverImage" /> <br /><br />
+      <img :src="movie.coverImage" id="movieImage" width="275" height="425" />
+      <br /><br />
       <div id="movieDetails">
         <p><b>Year of release: </b> {{ movie.year }}</p>
         <p>
@@ -23,27 +24,24 @@
         <br />
         <Row>
           <Col>
-            <Button type="dashed" @click="displayModal"
-              >Show more details</Button
-            >
+            <Button type="dashed" @click="displayModal">Show more</Button>
           </Col>
-          <Col span="1"> </Col>
-          <Col>
+
+          <Col offset="1">
             <Button
               :to="{ name: 'movie', params: { movie: movie, isEdit: true } }"
               type="primary"
               ghost
-              >Edit Movie</Button
+              >Edit</Button
             >
           </Col>
-          <Col span="1"> </Col>
-          <Col>
+          <Col offset="1">
             <Button type="error" ghost @click="deleteMovieById">Delete</Button>
           </Col>
         </Row>
       </div>
     </Card>
-  </div>
+  </Col>
 </template>
 
 <script>
@@ -81,11 +79,20 @@ export default {
 
 <style scoped>
 img {
-  height: 10%;
-  width: 60%;
   border-radius: 2%;
 }
 #movieDetails {
   text-align: left;
+}
+#movieImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 98%;
+}
+
+#movieCard {
+  width: 350px;
+  margin: 5px;
 }
 </style>

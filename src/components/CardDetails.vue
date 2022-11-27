@@ -1,21 +1,19 @@
 <template>
-  <Col :xs="24" :sm="20" :md="16" :lg="12" :xl="8">
-    <div id="details">
-      <movie-details
-        v-if="isMovieCard"
-        :movie="movie"
-        @deleteMovieById="deleteMovieById"
-        @displayDetailsModal="displayDetailsModal"
-      />
-      <person-details
-        v-if="!isMovieCard"
-        :person="person"
-        :title="title"
-        @deletePerson="deletePerson"
-        @displayDetailsModal="displayDetailsModal"
-      />
-    </div>
-  </Col>
+  <div id="details">
+    <movie-details
+      v-if="isMovieCard"
+      :movie="movie"
+      @deleteMovieById="deleteMovieById"
+      @displayDetailsModal="displayDetailsModal"
+    />
+    <person-details
+      v-if="!isMovieCard"
+      :person="person"
+      :title="title"
+      @deletePerson="deletePerson"
+      @displayDetailsModal="displayDetailsModal"
+    />
+  </div>
 </template>
 
 <script>
